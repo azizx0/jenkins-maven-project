@@ -1,9 +1,9 @@
 pipeline {
-    agent any
+    agent { label 'windows' }  // Met ici le label exact de ton agent Windows
 
     tools {
-        maven 'M2_HOME'   // Utilise la variable d'environnement M2_HOME pour Maven
-        jdk 'JAVA_HOME'    // Utilise la variable d'environnement JAVA_HOME pour le JDK
+        maven 'M2_HOME'
+        jdk 'JAVA_HOME'
     }
 
     stages {
@@ -15,7 +15,6 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Le pom.xml est dans student-management, donc on build depuis ce sous-dossier
                 dir('student-management') {
                     bat 'mvn clean package'
                 }
