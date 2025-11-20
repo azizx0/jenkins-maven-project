@@ -1,9 +1,9 @@
 pipeline {
-    agent { label 'windows' }  // Met ici le label exact de ton agent Windows
+    agent { label 'windows' }
 
     tools {
-        maven 'M2_HOME'
         jdk 'JAVA_HOME'
+        maven 'M2_HOME'
     }
 
     stages {
@@ -13,10 +13,18 @@ pipeline {
             }
         }
 
+        stage('Debug Env') {
+            steps {
+                bat 'echo JAVA_HOME=%JAVA_HOME%'
+                bat 'echo M2_HOME=%M2_HOME%'
+                bat 'echo PATH=%PATH%'
+            }
+        }
+
         stage('Build') {
             steps {
                 dir('student-management') {
-                    bat 'mvn clean package'
+                    bat 'call "%M2_HOME%\\bin\\mvn" clean package'
                 }
             }
         }
