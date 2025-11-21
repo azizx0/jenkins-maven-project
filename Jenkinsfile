@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'windows' }
+    agent any
 
     tools {
         jdk 'JAVA_HOME'
@@ -15,16 +15,16 @@ pipeline {
 
         stage('Debug Env') {
             steps {
-                bat 'echo JAVA_HOME=%JAVA_HOME%'
-                bat 'echo M2_HOME=%M2_HOME%'
-                bat 'echo PATH=%PATH%'
+                sh 'echo JAVA_HOME=$JAVA_HOME'
+                sh 'echo M2_HOME=$M2_HOME'
+                sh 'echo PATH=$PATH'
             }
         }
 
         stage('Build') {
             steps {
                 dir('student-management') {
-                    bat 'call "%M2_HOME%\\bin\\mvn" clean package'
+                    sh 'mvn clean package'
                 }
             }
         }
