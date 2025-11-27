@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    stages {
+        // Stage 1 : Build Maven (tu l’avais déjà)
+        stage('Build Maven') {
+            steps {
+                echo 'Building project with Maven...'
+                dir('student-management') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
+        // Stage 2 : Build & Push Docker Image (nouvelle partie demandée)
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    // Connexion à Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+
+                        // Build de l'image à partir du sous-dossier student-management
+                        def image = docker.build("azizloueti/mon-spring-app:${env.BUILD_NUMBER}", "./student-management")
+
+                        // Push avec le numéro du build
+                        image.push()
+
+                        // Push aussi avec le tag "latest"
+                        image.push("latest")
+
+                        // Bonus : un tag fixe pour éviter les bugs Docker Hub
+                        image.push("tp-done")
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline terminé avec succès !'
+            echo 'Image disponible ici → https://hub.docker.com/r/azizloueti/mon-spring-app'
+        }
+        failure {
+            echo 'Échec du pipeline'
+        }
+    }
+}
